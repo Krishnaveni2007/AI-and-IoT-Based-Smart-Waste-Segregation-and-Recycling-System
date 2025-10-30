@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Waste Bin Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .bin {
+      width: 120px;
+      height: 120px;
+      margin: 10px;
+      display: inline-block;
+      text-align: center;
+      padding-top: 40px;
+      font-weight: bold;
+      color: white;
+      border: 2px solid black;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    #metal { background-color: green; }
+    #organic { background-color: green; }
+    #plastic { background-color: green; }
+    #status { margin-top: 20px; font-size: 16px; }
+    button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Smart Waste Bin Demo</h1>
+
+  <div id="metal" class="bin">Metal: 0%</div>
+  <div id="organic" class="bin">Organic: 0%</div>
+  <div id="plastic" class="bin">Plastic: 0%</div>
+
+  <br>
+  <button onclick="addWaste()">Add Waste</button>
+  <button onclick="resetBins()">Reset Bins</button>
+
+  <p id="status"></p>
+
+  <script>
+    let fill = { metal: 0, organic: 0, plastic: 0 };
+
+    function addWaste() {
+      let wasteDetected = Math.random() < 0.9;
+
+      if (!wasteDetected) {
+        document.getElementById("status").innerText = "No waste detected (IR sensor).";
+        return;
+      }
+
+      const types = ["metal", "organic", "plastic"];
+      let waste = types[Math.floor(Math.random() * types.length)];
+
+      fill[waste] += 25;
+      if (fill[waste] > 100) fill[waste] = 100;
+
+      for (let type of types) {
+        let bin = document.getElementById(type);
+        bin.innerText = `${type.charAt(0).toUpperCase() + type.slice(1)}: ${fill[type]}%`;
+
+        if (fill[type] < 50) bin.style.backgroundColor = "green";
+        else if (fill[type] < 80) bin.style.backgroundColor = "orange";
+        else bin.style.backgroundColor = "red";
+      }
+
+      let flapMsg = `Waste detected → ${waste.toUpperCase()} flap opened.`;
+
+      let alertMsg = "";
+      if (fill[waste] >= 100) {
+        alertMsg = ` ALERT: ${waste.toUpperCase()} bin is FULL!`;
+      }
+
+      document.getElementById("status").innerText = flapMsg + alertMsg;
+    }
+
+    function resetBins() {
+      fill = { metal: 0, organic: 0, plastic: 0 };
+      const types = ["metal", "organic", "plastic"];
+      for (let type of types) {
+        let bin = document.getElementById(type);
+        bin.innerText = `${type.charAt(0).toUpperCase() + type.slice(1)}: 0%`;
+        bin.style.backgroundColor = "green";
+      }
+      document.getElementById("status").innerText = "Bins have been reset.";
+    }
+  </script>
+</body>
+</html>
